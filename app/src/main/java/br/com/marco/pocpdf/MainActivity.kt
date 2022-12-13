@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
@@ -18,11 +19,11 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
     lateinit var renderer: PdfRenderer
-    lateinit var button: Button
+    private lateinit var button: Button
     lateinit var imageView: ImageView
-    lateinit var spinner: Spinner
-    lateinit var spinnerAdapter: Adapter
-    var totalPages = 0
+    private lateinit var spinner: Spinner
+    private lateinit var spinnerAdapter: Adapter
+    private var totalPages = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,13 +75,13 @@ class MainActivity : AppCompatActivity() {
                     if(parcelFileDescriptor != null) {
                         renderer = PdfRenderer(parcelFileDescriptor)
                         totalPages = renderer.pageCount
-                        imageView.setImageBitmap(displayPage(0, renderer))
                         setPdfAdapter(totalPages)
                     }
                 } catch (fnfe: FileNotFoundException){
+                    Log.d("Error", fnfe.message.toString())
 
                 } catch (e : IOException){
-
+                    Log.d("Error", e.message.toString())
                 }
             }
         }
@@ -91,7 +92,8 @@ class MainActivity : AppCompatActivity() {
             array.add(i)
         }
         spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, array)
-        spinner.adapter = spinnerAdapter as ArrayAdapter<Int>
+        spinner.adapter = spinnerAdapter as ArrayAdapter<*>
+        spinner.setSelection(0)
         spinner.visibility = View.VISIBLE
     }
 
